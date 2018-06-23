@@ -10,6 +10,7 @@ except ImportError:
     sys.path.insert(0, insert_dir)
     from query_morningstar import QueryKeyRatios
 
+
 class TestQueryKeyRatios(TestCase):
     def test_query_key_ratios(self):
         key_ratios = QueryKeyRatios.query_key_ratios("TSLA")
