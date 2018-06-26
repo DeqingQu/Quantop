@@ -108,3 +108,9 @@ venv.bak/
 
 # DS_Store
 .DS_Store
+
+# images
+images/
+
+#logs
+logs/
