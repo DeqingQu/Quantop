@@ -12,8 +12,7 @@ with tf.Session() as sess:
     print(result)
 
 
-
-# variable
+# How to use variable
 state = tf.Variable(0, name='counter')
 
 # 定义常量 one
@@ -34,6 +33,7 @@ with tf.Session() as sess:
     for _ in range(3):
         sess.run(update)
         print(sess.run(state))
+
 
 #   How to use placeholder
 # 在 Tensorflow 中需要定义 placeholder 的 type ，一般为 float32 形式
