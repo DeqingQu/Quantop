@@ -19,12 +19,12 @@ flags.DEFINE_integer("batch_size", 64, "The size of batch images [64]")
 flags.DEFINE_float("keep_prob", 0.8, "Keep probability of dropout layer. [0.8]")
 flags.DEFINE_float("init_learning_rate", 0.001, "Initial learning rate at early stage. [0.001]")
 flags.DEFINE_float("learning_rate_decay", 0.99, "Decay rate of learning rate. [0.99]")
-flags.DEFINE_integer("init_epoch", 5, "Num. of epoches considered as early stage. [5]")
-flags.DEFINE_integer("max_epoch", 50, "Total training epoches. [50]")
+flags.DEFINE_integer("init_epoch", 5, "Num. of epochs considered as early stage. [5]")
+flags.DEFINE_integer("max_epoch", 50, "Total training epochs. [50]")
 flags.DEFINE_integer("embed_size", None, "If provided, use embedding vector of this size. [None]")
 flags.DEFINE_string("stock_symbol", None, "Target stock symbol [None]")
 flags.DEFINE_integer("sample_size", 4, "Number of stocks to plot during training. [4]")
-flags.DEFINE_boolean("train", False, "True for training, False for testing [False]")
+flags.DEFINE_boolean("train", True, "True for training, False for testing [False]")
 
 FLAGS = flags.FLAGS
 
@@ -98,7 +98,7 @@ def main(_):
             FLAGS.input_size,
             FLAGS.num_steps,
             k=FLAGS.stock_count,
-            target_symbol="^GSPC"   #   FLAGS.stock_symbol,
+            target_symbol="GOOG"   #   FLAGS.stock_symbol,
         )
 
         if FLAGS.train:

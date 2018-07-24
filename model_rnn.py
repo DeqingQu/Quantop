@@ -119,7 +119,7 @@ class LstmRNN(object):
 
         # self.loss = -tf.reduce_sum(targets * tf.log(tf.clip_by_value(prediction, 1e-10, 1.0)))
         self.loss = tf.reduce_mean(tf.square(self.pred - self.targets), name="loss_mse_train")
-        self.optim = tf.train.RMSPropOptimizer(self.learning_rate).minimize(self.loss, name="rmsprop_optim")
+        self.optim = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss, name="rmsprop_optim")
 
         # Separated from train loss.
         self.loss_test = tf.reduce_mean(tf.square(self.pred - self.targets), name="loss_mse_test")
