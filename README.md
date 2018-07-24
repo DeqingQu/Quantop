@@ -13,3 +13,8 @@ Related works:
 2. Facebook Prophet.  https://research.fb.com/prophet-forecasting-at-scale/
 3. (TBD)
 4. (TBD)
+
++ Train a model only on GOOG.csv
+```
+python3 main.py --stock_symbol=GOOG --train --input_size=1 --lstm_size=128 --max_epoch=50
+```
