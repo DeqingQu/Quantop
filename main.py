@@ -98,7 +98,7 @@ def main(_):
             FLAGS.input_size,
             FLAGS.num_steps,
             k=FLAGS.stock_count,
-            target_symbol="GOOG"   #   FLAGS.stock_symbol,
+            target_symbol=FLAGS.stock_symbol,
         )
 
         if FLAGS.train:
