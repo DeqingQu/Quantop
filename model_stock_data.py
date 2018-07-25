@@ -23,7 +23,7 @@ class StockDataSet(object):
         self.normalized = normalized
 
         # Read csv file
-        raw_df = pd.read_csv(os.path.join("data", "%s.csv" % stock_sym))
+        raw_df = pd.read_csv(os.path.join("data", "%s.csv" % stock_sym), nrows=10)
 
         # Merge into one sequence
         if close_price_only:
@@ -39,12 +39,17 @@ class StockDataSet(object):
             self.stock_sym, len(self.train_X), len(self.test_y))
 
     def _prepare_data(self, seq):
+
         # split into items of input_size
         seq = [np.array(seq[i * self.input_size: (i + 1) * self.input_size])
                for i in range(len(seq) // self.input_size)]
 
+        # original stock price
+        ori_price = seq
+        print(ori_price)
+
         if self.normalized:
-            seq = [seq[0] / seq[0][0] - 1.0] + [
+            seq = [seq[0] / seq[0][-1] - 1.0] + [
                 curr / seq[i][-1] - 1.0 for i, curr in enumerate(seq[1:])]
 
         # split into groups of num_steps
@@ -54,6 +59,26 @@ class StockDataSet(object):
         train_size = int(len(X) * (1.0 - self.test_ratio))
         train_X, test_X = X[:train_size], X[train_size:]
         train_y, test_y = y[:train_size], y[train_size:]
+        train_y_origin_start = ori_price[self.num_steps - 1][-1]
+        test_y_origin_start = ori_price[self.num_steps + train_size - 1][-1]
+
+        print(train_y_origin_start)
+        print(test_y_origin_start)
+
+        print("train: origin y - size :%d" % len(train_y))
+        last_price = train_y_origin_start
+        for y in train_y:
+            cur_price = (y + 1.0) * last_price
+            print(cur_price)
+            last_price = cur_price
+
+        print("test: origin y - size :%d" % len(test_y))
+        last_price = test_y_origin_start
+        for y in test_y:
+            cur_price = (y + 1.0) * last_price
+            print(cur_price)
+            last_price = cur_price
+
         return train_X, train_y, test_X, test_y
 
     def generate_one_epoch(self, batch_size):
@@ -68,3 +93,7 @@ class StockDataSet(object):
             batch_y = self.train_y[j * batch_size: (j + 1) * batch_size]
             assert set(map(len, batch_X)) == {self.num_steps}
             yield batch_X, batch_y
+
+
+if __name__ == '__main__':
+     ss = StockDataSet("GOOG2", input_size=1, num_steps=2, test_ratio=0.5)
