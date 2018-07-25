@@ -166,19 +166,23 @@ class LstmRNN(object):
         # Merged test data of different stocks.
         merged_test_X = []
         merged_test_y = []
+        merged_test_y_price = []
         merged_test_labels = []
 
         for label_, d_ in enumerate(dataset_list):
             merged_test_X += list(d_.test_X)
             merged_test_y += list(d_.test_y)
+            merged_test_y_price += list(d_.test_y_price)
             merged_test_labels += [[label_]] * len(d_.test_X)
 
         merged_test_X = np.array(merged_test_X)
         merged_test_y = np.array(merged_test_y)
+        merged_test_y_price = np.array(merged_test_y_price)
         merged_test_labels = np.array(merged_test_labels)
 
         print("len(merged_test_X) =", len(merged_test_X))
         print("len(merged_test_y) =", len(merged_test_y))
+        print("len(merged_test_y_price) =", len(merged_test_y_price))
         print("len(merged_test_labels) =", len(merged_test_labels))
 
         test_data_feed = {
@@ -203,7 +207,6 @@ class LstmRNN(object):
                 i for i, sym_label in enumerate(merged_test_labels)
                 if sym_label[0] == l])
             sample_indices[sym] = target_indices
-        print(sample_indices)
 
         print("Start training for stocks:", [d.stock_sym for d in dataset_list])
         for epoch in range(config.max_epoch):
@@ -238,8 +241,10 @@ class LstmRNN(object):
                         for sample_sym, indices in sample_indices.items():
                             image_path = os.path.join(self.model_plots_dir, "{}_epoch{:02d}_step{:04d}.png".format(
                                 sample_sym, epoch, epoch_step))
-                            sample_preds = test_pred[indices]
-                            sample_truth = merged_test_y[indices]
+                            sample_preds = (test_pred[indices] * 5.0 + 1.0) * merged_test_y_price[indices - 1]
+                            # print(test_pred[indices])
+                            sample_truth = merged_test_y_price[indices]
+                            # print(merged_test_y[indices])
                             self.plot_samples(sample_preds, sample_truth, image_path, stock_sym=sample_sym)
 
                         self.save(global_step)
@@ -296,7 +301,7 @@ class LstmRNN(object):
             print(" [*] Failed to find a checkpoint")
             return False, 0
 
-    def plot_samples(self, preds, targets, figname, stock_sym=None, multiplier=5):
+    def plot_samples(self, preds, targets, figname, stock_sym=None, multiplier=1):
         def _flatten(seq):
             return np.array([x for y in seq for x in y])
 
@@ -310,7 +315,7 @@ class LstmRNN(object):
         plt.legend(loc='upper left', frameon=False)
         plt.xlabel("day")
         plt.ylabel("normalized price")
-        plt.ylim((min(truths), max(truths)))
+        plt.ylim((min(min(preds), min(truths)), max(max(preds), max(truths))))
         plt.grid(ls='--')
 
         if stock_sym:

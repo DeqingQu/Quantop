@@ -32,7 +32,7 @@ class StockDataSet(object):
             self.raw_seq = [price for tup in raw_df[['Open', 'Close']].values for price in tup]
 
         self.raw_seq = np.array(self.raw_seq)
-        self.train_X, self.train_y, self.test_X, self.test_y, self.train_y_start, self.test_y_start = self._prepare_data(self.raw_seq)
+        self.train_X, self.train_y, self.test_X, self.test_y, self.train_y_price, self.test_y_price = self._prepare_data(self.raw_seq)
 
     def info(self):
         return "StockDataSet [%s] train: %d test: %d" % (
@@ -54,17 +54,14 @@ class StockDataSet(object):
         # split into groups of num_steps
         X = np.array([seq[i: i + self.num_steps] for i in range(len(seq) - self.num_steps)])
         y = np.array([seq[i + self.num_steps] for i in range(len(seq) - self.num_steps)])
-
-        print("len ori_price : %d" % len(ori_price))
-        print("num_steps : %d" % self.num_steps)
+        y_price = np.array([ori_price[i + self.num_steps] for i in range(len(ori_price) - self.num_steps)])
 
         train_size = int(len(X) * (1.0 - self.test_ratio))
         train_X, test_X = X[:train_size], X[train_size:]
         train_y, test_y = y[:train_size], y[train_size:]
-        train_y_start = ori_price[self.num_steps - 1][-1]
-        test_y_start = ori_price[self.num_steps + train_size - 1][-1]
+        train_y_price, test_y_price = y_price[:train_size], y_price[train_size:]
 
-        return train_X, train_y, test_X, test_y, train_y_start, test_y_start
+        return train_X, train_y, test_X, test_y, train_y_price, test_y_price
 
     def generate_one_epoch(self, batch_size):
         num_batches = int(len(self.train_X)) // batch_size
