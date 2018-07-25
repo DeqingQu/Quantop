@@ -32,7 +32,7 @@ class StockDataSet(object):
             self.raw_seq = [price for tup in raw_df[['Open', 'Close']].values for price in tup]
 
         self.raw_seq = np.array(self.raw_seq)
-        self.train_X, self.train_y, self.test_X, self.test_y = self._prepare_data(self.raw_seq)
+        self.train_X, self.train_y, self.test_X, self.test_y, self.train_y_start, self.test_y_start = self._prepare_data(self.raw_seq)
 
     def info(self):
         return "StockDataSet [%s] train: %d test: %d" % (
@@ -59,27 +59,10 @@ class StockDataSet(object):
         train_size = int(len(X) * (1.0 - self.test_ratio))
         train_X, test_X = X[:train_size], X[train_size:]
         train_y, test_y = y[:train_size], y[train_size:]
-        train_y_origin_start = ori_price[self.num_steps - 1][-1]
-        test_y_origin_start = ori_price[self.num_steps + train_size - 1][-1]
+        train_y_start = ori_price[self.num_steps - 1][-1]
+        test_y_start = ori_price[self.num_steps + train_size - 1][-1]
 
-        print(train_y_origin_start)
-        print(test_y_origin_start)
-
-        print("train: origin y - size :%d" % len(train_y))
-        last_price = train_y_origin_start
-        for y in train_y:
-            cur_price = (y + 1.0) * last_price
-            print(cur_price)
-            last_price = cur_price
-
-        print("test: origin y - size :%d" % len(test_y))
-        last_price = test_y_origin_start
-        for y in test_y:
-            cur_price = (y + 1.0) * last_price
-            print(cur_price)
-            last_price = cur_price
-
-        return train_X, train_y, test_X, test_y
+        return train_X, train_y, test_X, test_y, train_y_start, test_y_start
 
     def generate_one_epoch(self, batch_size):
         num_batches = int(len(self.train_X)) // batch_size
@@ -97,3 +80,21 @@ class StockDataSet(object):
 
 if __name__ == '__main__':
      ss = StockDataSet("GOOG2", input_size=1, num_steps=2, test_ratio=0.5)
+
+     #   test code
+     print(ss.train_y_start)
+     print(ss.test_y_start)
+
+     print("train: origin y - size :%d" % len(ss.train_y))
+     last_price = ss.train_y_start
+     for y in ss.train_y:
+         cur_price = (y + 1.0) * last_price
+         print(cur_price)
+         last_price = cur_price
+
+     print("test: origin y - size :%d" % len(ss.test_y))
+     last_price = ss.test_y_start
+     for y in ss.test_y:
+         cur_price = (y + 1.0) * last_price
+         print(cur_price)
+         last_price = cur_price
