@@ -23,7 +23,7 @@ class StockDataSet(object):
         self.normalized = normalized
 
         # Read csv file
-        raw_df = pd.read_csv(os.path.join("data", "%s.csv" % stock_sym), nrows=10)
+        raw_df = pd.read_csv(os.path.join("data", "%s.csv" % stock_sym))
 
         # Merge into one sequence
         if close_price_only:
@@ -46,7 +46,6 @@ class StockDataSet(object):
 
         # original stock price
         ori_price = seq
-        print(ori_price)
 
         if self.normalized:
             seq = [seq[0] / seq[0][-1] - 1.0] + [
@@ -55,6 +54,9 @@ class StockDataSet(object):
         # split into groups of num_steps
         X = np.array([seq[i: i + self.num_steps] for i in range(len(seq) - self.num_steps)])
         y = np.array([seq[i + self.num_steps] for i in range(len(seq) - self.num_steps)])
+
+        print("len ori_price : %d" % len(ori_price))
+        print("num_steps : %d" % self.num_steps)
 
         train_size = int(len(X) * (1.0 - self.test_ratio))
         train_X, test_X = X[:train_size], X[train_size:]
