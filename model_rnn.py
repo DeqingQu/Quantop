@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 
 from tensorflow.contrib.tensorboard.plugins import projector
 
+from model_stock_data import StockDataSet
 
 class LstmRNN(object):
     def __init__(self, sess, stock_count,
@@ -250,7 +251,7 @@ class LstmRNN(object):
                         self.save(global_step)
 
         final_pred, final_loss = self.sess.run([self.pred, self.loss], test_data_feed)
-
+        print("final_pred = " + str(final_pred))
         # Save the final model
         self.save(global_step)
         return final_pred
@@ -323,3 +324,66 @@ class LstmRNN(object):
 
         plt.savefig(figname, format='png', bbox_inches='tight', transparent=True)
         plt.close()
+
+    def forward_data(self, dataset_list):
+        """
+        Args:
+            dataset_list (<StockDataSet>)
+            config (tf.app.flags.FLAGS)
+        """
+        assert len(dataset_list) > 0
+        self.merged_sum = tf.summary.merge_all()
+
+        if self.use_embed:
+            # Set up embedding visualization
+            # Format: tensorflow/tensorboard/plugins/projector/projector_config.proto
+            projector_config = projector.ProjectorConfig()
+
+            # You can add multiple embeddings. Here we add only one.
+            added_embed = projector_config.embeddings.add()
+            added_embed.tensor_name = self.embed_matrix.name
+            # Link this tensor to its metadata file (e.g. labels).
+            shutil.copyfile(os.path.join(self.logs_dir, "metadata.tsv"),
+                            os.path.join(self.model_logs_dir, "metadata.tsv"))
+            added_embed.metadata_path = "metadata.tsv"
+
+            # The next line writes a projector_config.pbtxt in the LOG_DIR. TensorBoard will
+            # read this file during startup.
+            projector.visualize_embeddings(self.writer, projector_config)
+
+        tf.global_variables_initializer().run()
+
+        # Merged test data of different stocks.
+        merged_test_X = []
+        merged_test_y = []
+        merged_test_y_price = []
+        merged_test_labels = []
+
+        for label_, d_ in enumerate(dataset_list):
+            merged_test_X += list(d_.test_X)
+            merged_test_y += list(d_.test_y)
+            merged_test_y_price += list(d_.test_y_price)
+            merged_test_labels += [[label_]] * len(d_.test_X)
+
+        merged_test_X = np.array(merged_test_X)
+        merged_test_y = np.array(merged_test_y)
+        merged_test_y_price = np.array(merged_test_y_price)
+        merged_test_labels = np.array(merged_test_labels)
+
+        print("len(merged_test_X) =", len(merged_test_X))
+        print("len(merged_test_y) =", len(merged_test_y))
+        print("len(merged_test_y_price) =", len(merged_test_y_price))
+        print("len(merged_test_labels) =", len(merged_test_labels))
+
+        test_data_feed = {
+            self.learning_rate: 0.0,
+            self.keep_prob: 1.0,
+            self.inputs: merged_test_X,
+            self.targets: merged_test_y,
+            self.symbols: merged_test_labels,
+        }
+
+        final_pred, final_loss = self.sess.run([self.pred, self.loss], test_data_feed)
+        print("final_pred = " + str(final_pred))
+        # Save the final model
+        return final_pred

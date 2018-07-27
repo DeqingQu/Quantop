@@ -106,6 +106,8 @@ def main(_):
         else:
             if not rnn_model.load()[0]:
                 raise Exception("[!] Train a model first, then run test mode")
+            else:
+                rnn_model.forward_data(stock_data_list)
 
 
 if __name__ == '__main__':
