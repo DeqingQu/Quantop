@@ -385,6 +385,12 @@ class LstmRNN(object):
         }
 
         final_pred, final_loss = self.sess.run([self.pred, self.loss], test_data_feed)
-        print("final_pred = " + str(final_pred))
-        # Save the final model
-        return final_pred
+        final_price = []
+        for i, p in enumerate(final_pred):
+            if i > 0:
+                final_price.append((final_pred[i] + 1.0) * merged_test_y_price[i-1])
+        final_price = np.array(final_price)
+        print("merged_test_y_price = " + str(merged_test_y_price))
+        print("final_price = " + str(final_price))
+
+        return final_price
