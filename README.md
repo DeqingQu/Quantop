@@ -16,5 +16,9 @@ Related works:
 
 + Train a model only on GOOG.csv
 ```
-python3 main.py --stock_symbol=GOOG --train --input_size=1 --lstm_size=128 --max_epoch=50
+python3 main.py --stock_symbol=GOOG --train=True --input_size=1 --lstm_size=128 --max_epoch=50
+```
++ Load a model trained by GOOG.csv
+```
+python3 main.py --stock_symbol=GOOG --train=False --input_size=1 --lstm_size=128 --max_epoch=50
 ```
