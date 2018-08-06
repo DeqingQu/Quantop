@@ -351,7 +351,8 @@ class LstmRNN(object):
             # read this file during startup.
             projector.visualize_embeddings(self.writer, projector_config)
 
-        tf.global_variables_initializer().run()
+        # variables has been initialized in restore stage
+        # tf.global_variables_initializer().run()
 
         # Merged test data of different stocks.
         merged_test_X = []
