@@ -49,6 +49,8 @@ class LstmRNN(object):
         self.logs_dir = logs_dir
         self.plots_dir = plots_dir
 
+        self.pred_coefficient = 5.0
+
         self.build_graph()
 
     def build_graph(self):
@@ -242,7 +244,7 @@ class LstmRNN(object):
                         for sample_sym, indices in sample_indices.items():
                             image_path = os.path.join(self.model_plots_dir, "{}_epoch{:02d}_step{:04d}.png".format(
                                 sample_sym, epoch, epoch_step))
-                            sample_preds = (test_pred[indices] * 5.0 + 1.0) * merged_test_y_price[indices - 1]
+                            sample_preds = (test_pred[indices] * self.pred_coefficient + 1.0) * merged_test_y_price[indices - 1]
                             # print(test_pred[indices])
                             sample_truth = merged_test_y_price[indices]
                             # print(merged_test_y[indices])
@@ -251,7 +253,7 @@ class LstmRNN(object):
                         self.save(global_step)
 
         final_pred, final_loss = self.sess.run([self.pred, self.loss], test_data_feed)
-        print("final_pred = " + str(final_pred))
+        print("final_pred = " + str(final_pred * self.pred_coefficient))
         # Save the final model
         self.save(global_step)
         return final_pred
@@ -388,9 +390,9 @@ class LstmRNN(object):
         final_price = []
         for i, p in enumerate(final_pred):
             if i > 0:
-                final_price.append((final_pred[i] + 1.0) * merged_test_y_price[i-1])
+                final_price.append((final_pred[i]*self.pred_coefficient + 1.0) * merged_test_y_price[i-1])
         final_price = np.array(final_price)
         print("merged_test_y_price = " + str(merged_test_y_price))
         print("final_price = " + str(final_price))
-
+        print("final_pred = " + str(final_pred*self.pred_coefficient))
         return final_price
