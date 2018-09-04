@@ -74,8 +74,10 @@ def load_sp500(input_size, num_steps, k=None, target_symbol=None, test_ratio=0.0
                      test_ratio=0.05)
         for _, row in info.iterrows()]
 
+
 def save_pred(stock_symbol, final_pred):
     np.savetxt("data/" + stock_symbol + "_pred.txt", final_pred, fmt="%f", delimiter=",")
+
 
 def main(_):
     pp.pprint(flags.FLAGS.__flags)

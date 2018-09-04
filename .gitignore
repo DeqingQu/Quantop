@@ -114,3 +114,6 @@ images/
 
 #logs
 logs/
+
+#txt
+data/*.txt
