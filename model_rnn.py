@@ -253,7 +253,8 @@ class LstmRNN(object):
                         self.save(global_step)
 
         final_pred, final_loss = self.sess.run([self.pred, self.loss], test_data_feed)
-        print("final_pred = " + str(final_pred * self.pred_coefficient))
+        final_pred *= self.pred_coefficient
+        # print("final_pred = " + str(final_pred))
         # Save the final model
         self.save(global_step)
         return final_pred
@@ -387,12 +388,13 @@ class LstmRNN(object):
         }
 
         final_pred, final_loss = self.sess.run([self.pred, self.loss], test_data_feed)
+        final_pred *= self.pred_coefficient
         final_price = []
         for i, p in enumerate(final_pred):
             if i > 0:
-                final_price.append((final_pred[i]*self.pred_coefficient + 1.0) * merged_test_y_price[i-1])
+                final_price.append((final_pred[i] + 1.0) * merged_test_y_price[i-1])
         final_price = np.array(final_price)
-        print("merged_test_y_price = " + str(merged_test_y_price))
+        # print("merged_test_y_price = " + str(merged_test_y_price))
         print("final_price = " + str(final_price))
-        print("final_pred = " + str(final_pred*self.pred_coefficient))
-        return final_price
+        # print("final_pred = " + str(final_pred))
+        return final_pred

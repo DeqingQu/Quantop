@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 import pprint
 
 import tensorflow as tf
@@ -73,6 +74,8 @@ def load_sp500(input_size, num_steps, k=None, target_symbol=None, test_ratio=0.0
                      test_ratio=0.05)
         for _, row in info.iterrows()]
 
+def save_pred(stock_symbol, final_pred):
+    np.savetxt("data/" + stock_symbol + "_pred.txt", final_pred, fmt="%f", delimiter=",")
 
 def main(_):
     pp.pprint(flags.FLAGS.__flags)
@@ -102,12 +105,15 @@ def main(_):
         )
 
         if FLAGS.train:
-            rnn_model.train(stock_data_list, FLAGS)
+            final_pred = rnn_model.train(stock_data_list, FLAGS)
         else:
             if not rnn_model.load()[0]:
                 raise Exception("[!] Train a model first, then run test mode")
             else:
-                rnn_model.forward_data(stock_data_list)
+                final_pred = rnn_model.forward_data(stock_data_list)
+
+        print(final_pred)
+        save_pred(FLAGS.stock_symbol, final_pred)
 
 
 if __name__ == '__main__':
