@@ -8,17 +8,15 @@ Claim1: The strategy using the optimal hedge ratio can achieve a higher yearly r
 Claim2: The strategy using the optimal hedge ratio can achieve a lower maximum drawdown than traditional strategies.
 Claim3: The Quantop can offer RESTful APIs for automated trades.
 
-Related works:
-1. Lilian's model only applied the share prices to predict prices. https://lilianweng.github.io/lil-log/2017/07/08/predict-stock-prices-using-RNN-part-1.html
-2. Facebook Prophet.  https://research.fb.com/prophet-forecasting-at-scale/
-3. (TBD)
-4. (TBD)
-
 + Train a model only on GOOG.csv
 ```
-python3 main.py --stock_symbol=GOOG --train=True --input_size=1 --lstm_size=128 --max_epoch=50
+python3 stock_prediction.py --stock_symbol=GOOG --train=True --input_size=1 --lstm_size=128 --max_epoch=50
 ```
 + Load a model trained by GOOG.csv
 ```
-python3 main.py --stock_symbol=GOOG --train=False --input_size=1 --lstm_size=128 --max_epoch=50
+python3 stock_prediction.py --stock_symbol=GOOG --train=False --input_size=1 --lstm_size=128 --max_epoch=50
+```
++ Calculate the ROI and sharpe ratio of the portfolio
+```
+python3 model_evaluation.py --with_hedging=True --top_num=5
 ```
