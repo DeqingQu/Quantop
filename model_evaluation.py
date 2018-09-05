@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import argparse
+from distutils.util import strtobool
 
 from model_stock_data import StockDataSet
 
@@ -13,6 +15,8 @@ class EvaluationCalculator(object):
         return np.loadtxt("data/" + stock_symbol + "_pred.txt", delimiter=',')
 
     def calculate_evaluation_quantity(self, top_num, with_hedging=True):
+
+        print(with_hedging)
 
         pred_res, truth_res = {}, {}
         stock_data = StockDataSet("^GSPC", input_size=1, num_steps=30, test_ratio=0.05)
@@ -39,7 +43,7 @@ class EvaluationCalculator(object):
                 new_roi -= sp500[i]
             rt_list.append(new_roi / roi - 1.0)
             roi = new_roi
-            print("echo %d : %f" % (i, roi))
+            # print("echo %d : %f" % (i, roi))
 
         df = pd.DataFrame()
         df['rt'] = rt_list
@@ -49,6 +53,15 @@ class EvaluationCalculator(object):
 
 
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description='Evaluate the ROI and sharpe ratio of the portfolio')
+    parser.add_argument("--top_num", help="number of stocks selected in the portfolio (default=5)", type=int,
+                        default=5)
+    parser.add_argument("--with_hedging", help="with hedging or not (default=True)",
+                        type=lambda x: bool(strtobool(x)),
+                        default=False)
+    args = parser.parse_args()
+    
     eva_cal = EvaluationCalculator(['AAPL', 'GE', 'GM', 'GOOG', 'JPM', 'KORS', 'MAR', 'MCD', 'MMM', 'TSLA'])
-    ret, sharpe = eva_cal.calculate_evaluation_quantity(5, with_hedging=True)
+    ret, sharpe = eva_cal.calculate_evaluation_quantity(args.top_num, with_hedging=args.with_hedging)
     print("roi = %f, sharpe_ratio = %f" % (ret, sharpe))
