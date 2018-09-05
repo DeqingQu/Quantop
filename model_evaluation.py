@@ -61,7 +61,7 @@ if __name__ == '__main__':
                         type=lambda x: bool(strtobool(x)),
                         default=False)
     args = parser.parse_args()
-    
+
     eva_cal = EvaluationCalculator(['AAPL', 'GE', 'GM', 'GOOG', 'JPM', 'KORS', 'MAR', 'MCD', 'MMM', 'TSLA'])
     ret, sharpe = eva_cal.calculate_evaluation_quantity(args.top_num, with_hedging=args.with_hedging)
     print("roi = %f, sharpe_ratio = %f" % (ret, sharpe))
