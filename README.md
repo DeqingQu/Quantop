@@ -6,7 +6,7 @@ The Quantop will apply multiple Machine Learning and statistical models (includi
 
 Claim1: The portfolio using hedge strategy can achieve higher excess returns than traditional strategies.<br>
 Claim2: The portfolio using hedge strategy can achieve lower risk of volatility than traditional strategies.<br>
-Claim3: The Quantop can offer RESTful APIs for automated trades.
+Claim3: The Quantop can offer RESTful APIs for automated trades. (It will be completed before the end of October)
 
 + Train a model using RNN on GOOG.csv
 ```
