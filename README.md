@@ -21,10 +21,11 @@ python3 stock_prediction.py --stock_symbol=GOOG --train=False --input_size=1 --l
 python3 model_evaluation.py --with_hedging=True --top_num=5
 ```
 
-Todo list (Before 12/15):
+Todo list (Before 12/15/18):
 1. API Design
 2. Database Design
 3. Backend Design
 
-Todo list (Before 12/31)
+Todo list (Before 12/31/18):
+
 Backend Implementation
