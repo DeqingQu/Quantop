@@ -117,3 +117,6 @@ logs/
 
 #txt
 data/*.txt
+
+#node_modules
+node_modules/
