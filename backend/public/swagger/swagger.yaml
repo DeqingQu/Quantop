@@ -7,7 +7,7 @@ info:
 servers:
 # Added by API Auto Mocking Plugin
   - description: Quantop API
-    url: http://localhost:3000/quantop/1.0
+    url: http://localhost:3000/v1
 
 paths:
   /users/{userId}:
