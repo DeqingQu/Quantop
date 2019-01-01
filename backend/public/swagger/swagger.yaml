@@ -9,10 +9,20 @@ servers:
   - description: Quantop API
     url: http://localhost:3000/v1
 
+tags:
+- description: User
+  name: User
+- description: History of stock price
+  name: History
+- description: Prediction of stock price
+  name: Prediction
+
 paths:
   /users/{userId}:
     get:
       summary: Returns a user by ID
+      tags:
+        - User
       parameters:
         - name: userId
           in: path
@@ -36,3 +46,61 @@ paths:
           description: The specified user ID is invalid (e.g. not a number)
         '404':
           description: A user with the specified ID was not found
+
+  /history/{historyId}:
+    get:
+      summary: Returns a history by ID
+      tags:
+        - History
+      parameters:
+        - name: historyId
+          in: path
+          required: true
+          description: The ID of the historyId to return
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+        '400':
+          description: The specified historyId ID is invalid (e.g. not a number)
+        '404':
+          description: A historyId with the specified ID was not found
+
+  /prediction/{predictionId}:
+    get:
+      summary: Returns a prediction by ID
+      tags:
+        - Prediction
+      parameters:
+        - name: predictionId
+          in: path
+          required: true
+          description: The ID of the prediction to return
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+        '400':
+          description: The specified prediction ID is invalid (e.g. not a number)
+        '404':
+          description: A prediction with the specified ID was not found
