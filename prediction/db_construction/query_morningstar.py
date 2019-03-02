@@ -49,4 +49,4 @@ class QueryKeyRatios:
 
 
 if __name__ == '__main__':
-    print(QueryKeyRatios.query_key_ratios("TSLA"))
+    print(QueryKeyRatios.query_key_ratios("GOOG"))
