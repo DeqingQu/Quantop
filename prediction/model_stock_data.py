@@ -27,9 +27,9 @@ class StockDataSet(object):
 
         # Merge into one sequence
         if close_price_only:
-            self.raw_seq = raw_df['Close'].tolist()
+            self.raw_seq = raw_df['close'].tolist()
         else:
-            self.raw_seq = [price for tup in raw_df[['Open', 'Close']].values for price in tup]
+            self.raw_seq = [price for tup in raw_df[['open', 'close']].values for price in tup]
 
         self.raw_seq = np.array(self.raw_seq)
         self.train_X, self.train_y, self.test_X, self.test_y, self.train_y_price, self.test_y_price = self._prepare_data(self.raw_seq)
