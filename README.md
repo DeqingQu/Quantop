@@ -8,13 +8,13 @@ Claim1: The portfolio using hedge strategy can achieve higher excess returns tha
 Claim2: The portfolio using hedge strategy can achieve lower risk of volatility than traditional strategies.<br>
 Claim3: The Quantop can offer RESTful APIs for automated trades. (It will be completed before the end of October)
 
-+ Train a model using RNN on GOOG.csv
++ Train a model using RNN on AAPL.csv
 ```
-python3 stock_prediction.py --stock_symbol=GOOG --train=True --input_size=1 --lstm_size=128 --max_epoch=50
+python3 stock_prediction.py --stock_symbol=AAPL --train=True --lstm_size=128 --max_epoch=500
 ```
-+ Load a model trained by GOOG.csv
++ Load a model trained by AAPL.csv
 ```
-python3 stock_prediction.py --stock_symbol=GOOG --train=False --input_size=1 --lstm_size=128 --max_epoch=50
+python3 stock_prediction.py --stock_symbol=GOOG --train=False --lstm_size=128 --max_epoch=50
 ```
 + Calculate the ROI and sharpe ratio of the portfolio
 ```
