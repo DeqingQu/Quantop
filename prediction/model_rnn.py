@@ -42,6 +42,7 @@ class LstmRNN(object):
         self.num_layers = num_layers
         self.num_steps = num_steps
         self.input_size = input_size
+        self.output_size = 1
 
         self.use_embed = (embed_size is not None) and (embed_size > 0)
         self.embed_size = embed_size or -1
@@ -49,7 +50,7 @@ class LstmRNN(object):
         self.logs_dir = logs_dir
         self.plots_dir = plots_dir
 
-        self.pred_coefficient = 5.0
+        self.pred_coefficient = 1.0
 
         self.build_graph()
 
@@ -70,7 +71,7 @@ class LstmRNN(object):
         self.symbols = tf.placeholder(tf.int32, [None, 1], name='stock_labels')
 
         self.inputs = tf.placeholder(tf.float32, [None, self.num_steps, self.input_size], name="inputs")
-        self.targets = tf.placeholder(tf.float32, [None, self.input_size], name="targets")
+        self.targets = tf.placeholder(tf.float32, [None, 1], name="targets")
 
         def _create_one_cell():
             lstm_cell = tf.contrib.rnn.LSTMCell(self.lstm_size, state_is_tuple=True)
@@ -111,8 +112,9 @@ class LstmRNN(object):
         val = tf.transpose(val, [1, 0, 2])
 
         last = tf.gather(val, int(val.get_shape()[0]) - 1, name="lstm_state")
-        ws = tf.Variable(tf.truncated_normal([self.lstm_size, self.input_size]), name="w")
-        bias = tf.Variable(tf.constant(0.1, shape=[self.input_size]), name="b")
+        ws = tf.Variable(tf.truncated_normal([self.lstm_size, self.output_size]), name="w")
+        bias = tf.Variable(tf.constant(0.1, shape=[self.output_size]), name="b")
+        last = tf.reshape(last, [-1, self.lstm_size])
         self.pred = tf.matmul(last, ws) + bias
 
         self.last_sum = tf.summary.histogram("lstm_state", last)
@@ -234,7 +236,8 @@ class LstmRNN(object):
                         [self.loss, self.optim, self.merged_sum], train_data_feed)
                     self.writer.add_summary(train_merged_sum, global_step=global_step)
 
-                    if np.mod(global_step, len(dataset_list) * 200 / config.input_size) == 1:
+                    # if np.mod(global_step, len(dataset_list) * 200 / config.input_size) == 1:
+                    if np.mod(global_step, len(dataset_list) * 200) == 1:
                         test_loss, test_pred = self.sess.run([self.loss_test, self.pred], test_data_feed)
 
                         print("Step:%d [Epoch:%d] [Learning rate: %.6f] train_loss:%.6f test_loss:%.6f" % (
@@ -244,7 +247,8 @@ class LstmRNN(object):
                         for sample_sym, indices in sample_indices.items():
                             image_path = os.path.join(self.model_plots_dir, "{}_epoch{:02d}_step{:04d}.png".format(
                                 sample_sym, epoch, epoch_step))
-                            sample_preds = (test_pred[indices] * self.pred_coefficient + 1.0) * merged_test_y_price[indices - 1]
+                            # sample_preds = (test_pred[indices] * self.pred_coefficient + 1.0) * merged_test_y_price[indices - 1]
+                            sample_preds = test_pred[indices]
                             # print(test_pred[indices])
                             sample_truth = merged_test_y_price[indices]
                             # print(merged_test_y[indices])
@@ -252,9 +256,8 @@ class LstmRNN(object):
 
                         self.save(global_step)
 
-        final_pred, final_loss = self.sess.run([self.pred, self.loss], test_data_feed)
-        final_pred *= self.pred_coefficient
-        # print("final_pred = " + str(final_pred))
+        final_loss, final_pred = self.sess.run([self.loss, self.pred], test_data_feed)
+        # final_pred *= self.pred_coefficient
         # Save the final model
         self.save(global_step)
         return final_pred
