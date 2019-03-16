@@ -12,13 +12,13 @@ from model_rnn import LstmRNN
 
 flags = tf.app.flags
 flags.DEFINE_integer("stock_count", 100, "Stock count [100]")
-flags.DEFINE_integer("input_size", 4, "Input size [1]")
+flags.DEFINE_integer("input_size", 4, "Input size [4]")
 flags.DEFINE_integer("num_steps", 30, "Num of steps [30]")
 flags.DEFINE_integer("num_layers", 1, "Num of layer [1]")
 flags.DEFINE_integer("lstm_size", 128, "Size of one LSTM cell [128]")
 flags.DEFINE_integer("batch_size", 64, "The size of batch images [64]")
 flags.DEFINE_float("keep_prob", 0.8, "Keep probability of dropout layer. [0.8]")
-flags.DEFINE_float("init_learning_rate", 0.001, "Initial learning rate at early stage. [0.001]")
+flags.DEFINE_float("init_learning_rate", 0.0005, "Initial learning rate at early stage. [0.0005]")
 flags.DEFINE_float("learning_rate_decay", 0.99, "Decay rate of learning rate. [0.99]")
 flags.DEFINE_integer("init_epoch", 5, "Num. of epochs considered as early stage. [5]")
 flags.DEFINE_integer("max_epoch", 50, "Total training epochs. [50]")

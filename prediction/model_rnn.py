@@ -314,6 +314,7 @@ class LstmRNN(object):
 
         truths = _flatten(targets)[-200:]
         preds = (_flatten(preds) * multiplier)[-200:]
+        preds = preds * truths[0] / preds[0]
         days = range(len(truths))[-200:]
 
         plt.figure(figsize=(12, 6))
