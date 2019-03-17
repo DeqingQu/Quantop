@@ -114,7 +114,7 @@ def main(_):
             else:
                 final_pred = rnn_model.forward_data(stock_data_list)
 
-        print(final_pred)
+        # print(final_pred)
         save_pred(FLAGS.stock_symbol, final_pred)
 
 

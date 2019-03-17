@@ -254,12 +254,21 @@ class LstmRNN(object):
                             # print(merged_test_y[indices])
                             self.plot_samples(sample_preds, sample_truth, image_path, stock_sym=sample_sym)
 
+                            truth_trends = self.transfer_to_trends(sample_truth)
+                            pred_trends = self.transfer_to_trends(sample_preds)
+                            print("accuracy = %f" % self.calculate_accuracy(truth_trends, pred_trends))
+
                         self.save(global_step)
 
         final_loss, final_pred = self.sess.run([self.loss, self.pred], test_data_feed)
         # final_pred *= self.pred_coefficient
         # Save the final model
         self.save(global_step)
+
+        truth_trends = self.transfer_to_trends(merged_test_y_price)
+        pred_trends = self.transfer_to_trends(final_pred)
+        print("final accuracy = %f" % self.calculate_accuracy(truth_trends, pred_trends))
+
         return final_pred
 
     @property
@@ -307,6 +316,28 @@ class LstmRNN(object):
         else:
             print(" [*] Failed to find a checkpoint")
             return False, 0
+
+    def transfer_to_trends(self, prices):
+        res = []
+        base = prices[0]
+        for i in range(1, len(prices)):
+            if prices[i] >= base:
+                res.append(True)
+            else:
+                res.append(False)
+            base = prices[i]
+        return res
+
+    def calculate_accuracy(self, ground_truth, pred):
+        if len(ground_truth) != len(pred):
+            raise Exception("length doesn't match")
+        count = 0
+        miss = 0
+        for i in range(len(ground_truth)):
+            count += 1
+            if ground_truth[i] != pred[i]:
+                miss += 1
+        return 1.0 - miss / count
 
     def plot_samples(self, preds, targets, figname, stock_sym=None, multiplier=1):
         def _flatten(seq):
