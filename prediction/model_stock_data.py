@@ -31,7 +31,7 @@ class StockDataSet(object):
             self.raw_seq = [price for tup in raw_df[['close']].values for price in tup]
         elif input_size == 4:
             # self.raw_seq = [price for tup in raw_df[['close']].values for price in tup]
-            self.raw_seq = [price for tup in raw_df[['close', 'volume', 'PE', 'PB']].values for price in tup]
+            self.raw_seq = [price for tup in raw_df[['close', 'open', 'volume', 'PE']].values for price in tup]
         else:
             raise Exception("Unsupported input_size")
 
