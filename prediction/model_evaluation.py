@@ -28,28 +28,38 @@ class EvaluationCalculator(object):
             stock_data = StockDataSet(stock_symbol, input_size=1, num_steps=30, test_ratio=0.05)
             truth_res[stock_symbol] = stock_data.test_y
 
+            # print("-----pred------")
+            # print(pred_res)
+            # print("-----truth------")
+            # print(truth_res)
+
         roi = 1.0
         rt_list = []
-        for i in range(len(pred_res['AAPL'])):
+        for i in range(1, len(pred_res['AAPL'])):
             d = {}
             for k, v in pred_res.items():
                 d[k] = v[i]
             sorted_d = sorted(d.items(), key=lambda item: item[1], reverse=True)
-            new_roi = 0.0
+            new_return = 0
+            new_invest = 0
             for j in range(top_num):
                 key = sorted_d[j][0]
-                new_roi += roi / top_num * (1.0 + truth_res[key][j])
+                # new_roi += roi / top_num * (1.0 + truth_res[key][j])
+                new_return += truth_res[key][i] - truth_res[key][i - 1]
+                new_invest += truth_res[key][i]
             if with_hedging:
-                new_roi -= sp500[i]
-            rt_list.append(new_roi / roi - 1.0)
-            roi = new_roi
-            # print("echo %d : %f" % (i, roi))
+                new_return -= sp500[i] - sp500[i - 1]
+                new_invest += sp500[i]
+            new_roi = new_return / new_invest
+            roi *= (new_roi + 1)
+            rt_list.append(new_roi)
+            print("echo %d : %f" % (i, roi))
 
         df = pd.DataFrame()
         df['rt'] = rt_list
         sharpe_ratio = df['rt'].mean() / df['rt'].std()
 
-        return roi - 1.0, sharpe_ratio
+        return sum(rt_list), sharpe_ratio
 
 
 if __name__ == '__main__':
@@ -62,6 +72,6 @@ if __name__ == '__main__':
                         default=False)
     args = parser.parse_args()
 
-    eva_cal = EvaluationCalculator(['AAPL', 'GE', 'GM', 'GOOG', 'JPM', 'KORS', 'MAR', 'MCD', 'MMM', 'TSLA'])
+    eva_cal = EvaluationCalculator(['AAPL','AMZN', 'MSFT', 'GE', 'GM', 'GOOG', 'JPM', 'KORS', 'MCD', 'MMM', 'TSLA'])
     ret, sharpe = eva_cal.calculate_evaluation_quantity(args.top_num, with_hedging=args.with_hedging)
     print("roi = %f, sharpe_ratio = %f" % (ret, sharpe))
