@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import random
 import time
+from sklearn.preprocessing import normalize
 
 random.seed(time.time())
 
@@ -53,7 +54,8 @@ class StockDataSet(object):
 
         if self.normalized:
             seq_np = np.array(seq)
-            seq_np = seq_np / seq_np.max(axis=0)
+            seq_np = normalize(seq_np, axis=0, norm='max')
+            # seq_np = (seq_np - seq_np.min(axis=0)) / (seq_np.max(axis=0), seq_np.min(axis=0))
             seq = seq_np.tolist()
             # seq = [seq[0] / seq[0][-1] - 1.0] + [
             #     curr / seq[i][-1] - 1.0 for i, curr in enumerate(seq[1:])]
