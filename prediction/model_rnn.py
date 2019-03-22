@@ -10,6 +10,10 @@ import matplotlib.pyplot as plt
 
 from tensorflow.contrib.tensorboard.plugins import projector
 
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import r2_score
+
 from model_stock_data import StockDataSet
 
 class LstmRNN(object):
@@ -326,10 +330,7 @@ class LstmRNN(object):
         preds = preds * truths[0] / preds[0]
         days = range(len(truths))[-200:]
 
-        sum_diff = 0
-        for i in range(len(preds)):
-            sum_diff += abs(truths[i] - preds[i]) / preds[i]
-        print("accuracy = %f" % (1 - sum_diff / len(preds)))
+        print("mse = %f, r2_score = %f" % (mean_squared_error(truths, preds), r2_score(truths, preds)))
 
         plt.figure(figsize=(12, 6))
         plt.plot(days, truths, label='truth')
